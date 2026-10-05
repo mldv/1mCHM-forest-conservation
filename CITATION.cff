@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this code or data, please cite the paper below."
+title: "1mCHM-forest-conservation"
+repository-code: "https://github.com/mldv/1mCHM-forest-conservation"
+license: GPL-3.0
+authors:
+  - family-names: Della Vedova
+    given-names: Marco L.
+    affiliation: Chalmers University of Technology
+  - family-names: Wahde
+    given-names: Mattias
+    affiliation: Chalmers University of Technology
+preferred-citation:
+  type: article
+  title: "Meter-resolution canopy height data alone can be used for predicting the conservation value of Boreal forests"
+  authors:
+    - family-names: Della Vedova
+      given-names: Marco L.
+    - family-names: Wahde
+      given-names: Mattias
+  journal: "IEEE Geoscience and Remote Sensing Letters"
+  year: 2025

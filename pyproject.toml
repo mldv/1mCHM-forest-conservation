@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "chmcons"
+version = "1.0.0"
+description = "Predicting forest conservation value from meter-resolution canopy height models"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Marco L. Della Vedova", email = "marco.dellavedova@chalmers.se" },
+    { name = "Mattias Wahde" },
+]
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "torch>=2.1",
+    "h5py",
+    "rasterio",
+    "geopandas",
+    "shapely>=2",
+    "pyproj",
+    "tqdm",
+    "matplotlib",
+    "skogdata @ git+https://github.com/mldv/SkogDataPy@0.2.0",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/chmcons"]
