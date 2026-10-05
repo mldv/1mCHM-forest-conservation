@@ -23,7 +23,7 @@ dependencies = [
     "pyproj",
     "tqdm",
     "matplotlib",
-    "skogdata @ git+https://github.com/mldv/SkogDataPy@0.2.1",
+    "skogdata @ git+https://github.com/mldv/SkogDataPy@0.2.2",
 ]
 
 [tool.hatch.metadata]
