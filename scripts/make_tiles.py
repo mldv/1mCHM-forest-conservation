@@ -1,7 +1,7 @@
-"""Build labelled 1280x1280 m GeoTIFF tiles (band 1: CHM in dm, band 2: 0 background / 1 low / 2 high value).
+"""Build the labelled 1280x1280 m GeoTIFF tiles (band 1: CHM in dm, band 2: 0 background / 1 low / 2 high value).
 
-The CHM is downloaded on demand from Skogsstyrelsen via skogdata (cache folder set by CACHE in .env).
-Tiles without CHM coverage or without any label are skipped.
+The CHM is read through skogdata from its cache folder (CACHE in .env) and missing files are downloaded from
+Skogsstyrelsen's FTP server, unless SKOGDATA_OFFLINE=1. The CHM version is fixed to what was used in the paper.
 """
 
 import argparse
@@ -15,21 +15,37 @@ import shapely
 from skogdata import DataSourceCatalog
 from tqdm import tqdm
 
+CHM_METADATA = "20250131"
+CHM_CUTOFF = "2025-01-31"
+
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--labels", default="data/labels.gpkg.zip")
 parser.add_argument("--grid", default="data/tiles.gpkg")
 parser.add_argument("--out", default="tiles")
 parser.add_argument("--splits", nargs="+", default=["training", "validation", "test"])
+parser.add_argument("--list-files", metavar="FILE",
+                    help="only write the FTP paths of the CHM files needed (e.g. for an FTP client) to FILE")
 args = parser.parse_args()
+
+chm_source = DataSourceCatalog.Tradhojd
+chm_source.configure(metadata=CHM_METADATA, cutoff=CHM_CUTOFF)
+
+grid = geopandas.read_file(args.grid)
+grid = grid[grid["split"].isin(args.splits)]
+
+if args.list_files:
+    files = {str(f) for tile in grid.geometry for f in chm_source.required_files(tile)}
+    files = [str(f) for f in chm_source.metadata_source.files] + sorted(files)
+    Path(args.list_files).write_text("\n".join(files) + "\n")
+    print(f"{len(files)} files listed in {args.list_files}")
+    raise SystemExit
 
 labels = geopandas.read_file(args.labels).set_index("naturalness").geometry
 low, high = labels[0], labels[1]
 shapely.prepare(low)
 shapely.prepare(high)
 
-grid = geopandas.read_file(args.grid)
-grid = grid[grid["split"].isin(args.splits)]
-
+failed = []
 for tile, split in tqdm(zip(grid.geometry, grid["split"]), total=len(grid)):
     x0, y0, *_ = tile.bounds
     path = Path(args.out) / split / f"{int(x0)}_{int(y0)}_1280.tif"
@@ -37,8 +53,9 @@ for tile, split in tqdm(zip(grid.geometry, grid["split"]), total=len(grid)):
         continue
 
     try:
-        chm, transform = DataSourceCatalog.Tradhojd(tile, padding=0)
-    except (FileNotFoundError, AssertionError):
+        chm, transform = chm_source(tile, padding=0)
+    except FileNotFoundError as e:
+        failed.append(f"{path.name}: {e}")
         continue
     chm = chm[0]
 
@@ -52,8 +69,6 @@ for tile, split in tqdm(zip(grid.geometry, grid["split"]), total=len(grid)):
             continue
         mask = rasterio.features.rasterize([geom], out_shape=chm.shape, transform=transform)
         lab += mask * value * (lab == 0)
-    if lab.max() == 0:
-        continue
 
     path.parent.mkdir(parents=True, exist_ok=True)
     raster = np.stack([chm, lab])
@@ -62,3 +77,6 @@ for tile, split in tqdm(zip(grid.geometry, grid["split"]), total=len(grid)):
         count=2, height=raster.shape[1], width=raster.shape[2], dtype=raster.dtype,
     ) as dst:
         dst.write(raster)
+
+if failed:
+    print(f"{len(failed)} tiles could not be built:", *failed, sep="\n")

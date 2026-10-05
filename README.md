@@ -9,7 +9,7 @@ A U-Net takes a canopy height model (CHM) tile as its only input and predicts, f
 ```
 data/
   labels.gpkg.zip   ground-truth polygons, dissolved per class (naturalness 0 = low, 1 = high), EPSG:3006
-  tiles.gpkg        1280 m tile grid with the training / validation / test split
+  tiles.gpkg        the 23,448 tiles (1280x1280 m) used in the paper, with their training / validation / test split
 src/chmcons/        model, data handling, losses, metrics
 scripts/
   make_tiles.py     CHM + labels -> 2-band GeoTIFF tiles
@@ -32,19 +32,43 @@ source .venv/bin/activate
 pip install -e .
 ```
 
-The CHM ([Skogsstyrelsen](https://www.skogsstyrelsen.se/sjalvservice/karttjanster/skogliga-grunddata), *trädhöjd* layer) is downloaded on demand from the agency's public FTP by [SkogDataPy](https://github.com/mldv/SkogDataPy). Downloaded files are cached in the folder given by the `CACHE` environment variable, or by a `.env` file in the working directory:
+## Canopy height data
+
+The CHM ([Skogsstyrelsen](https://www.skogsstyrelsen.se/sjalvservice/karttjanster/skogliga-grunddata), *trädhöjd* layer) is read through [SkogDataPy](https://github.com/mldv/SkogDataPy). The files are kept in a cache folder, set with the `CACHE` environment variable or in a `.env` file in the repository root:
 
 ```bash
 echo "CACHE=/path/to/chm/cache" > .env
 ```
 
-The full study area covers a large part of southern Sweden, so plan disk space for the cache, for the tiles and for the HDF5 files.
+The CHM version is fixed to the one used in the paper: Skogsstyrelsen's metadata of 2025-01-31, ignoring scans made after that date (see `CHM_METADATA` and `CHM_CUTOFF` in `scripts/make_tiles.py`). Later updates of the CHM therefore do not change the tiles.
+
+The study area covers a large part of southern Sweden, so plan disk space for the cache, for the tiles and for the HDF5 files.
+
+**Automatic download.** By default, `make_tiles.py` downloads missing files from the agency's public FTP server.
+
+**Manual download.** Alternatively, download the files with any FTP client (e.g. FileZilla or `lftp`) and run offline:
+
+1. Connect to `ftpsks.skogsstyrelsen.se` (implicit FTPS, port 990) with the public credentials published by [Skogsstyrelsen](https://www.skogsstyrelsen.se/sjalvservice/karttjanster/geodatatjanster/ftp/).
+2. Download the metadata files into the cache folder, keeping the server's folder structure:
+   ```
+   $CACHE/Tradhojd_LaserdataSkog/Metadata/TradHojdLaserdataSkogMetadata_20250131.{shp,dbf,shx,prj}
+   ```
+3. List the CHM files needed for the tiles:
+   ```bash
+   SKOGDATA_OFFLINE=1 python scripts/make_tiles.py --list-files chm_files.txt
+   ```
+4. Download every listed path into the cache folder, again keeping the folder structure, e.g. `$CACHE/Tradhojd_LaserdataSkog/2021/65_7/THL_21C032_65800_7000_2021.mrf`.
+5. Build the tiles without connecting to the server:
+   ```bash
+   SKOGDATA_OFFLINE=1 python scripts/make_tiles.py
+   ```
+   In offline mode, a tile whose files are missing is reported together with the missing paths.
 
 ## Reproducing the results
 
 Run every command from the repository root.
 
-**1. Tiles.** Downloads the CHM, rasterizes the labels and writes `tiles/{training,validation,test}/*.tif`. Grid cells without CHM coverage or without labels are skipped. Tiles that already exist are not rebuilt, so the script can be resumed.
+**1. Tiles.** Reads the CHM (see [Canopy height data](#canopy-height-data)), rasterizes the labels and writes `tiles/{training,validation,test}/*.tif`. Tiles that already exist are not rebuilt, so the script can be resumed. Tiles that cannot be built are listed at the end.
 
 ```bash
 python scripts/make_tiles.py
@@ -116,7 +140,7 @@ The area is processed in independent 1280×1280 m windows, so artifacts can appe
 - **High conservation value (1):** the union of habitat-classed Natura 2000 areas and woodland key habitats, inventoried by forestry companies and by the Swedish Forest Agency.
 - **Low conservation value (0):** the union of forests harvested 1990–2000, stands aged 30–80 years, and older stands assessed as having low natural value.
 
-Areas labelled both high and low are treated as background when the tiles are made. See the paper and [Della Vedova & Wahde (2024)](https://doi.org/10.1080/22797254.2024.2441834) for details on the label sources. The tile grid and split follow the same geographical stratification as that earlier work.
+Areas labelled both high and low are treated as background when the tiles are made. See the paper and [Della Vedova & Wahde (2024)](https://doi.org/10.1080/22797254.2024.2441834) for details on the label sources. The split follows the same geographical stratification as that earlier work. `data/tiles.gpkg` lists exactly the tiles used for training, validation and testing in the paper.
 
 ## Citation
 
