@@ -1,4 +1,9 @@
-"""Fig. 3: test accuracy as a function of resolution, from results/results.csv."""
+"""
+Fig. 3: test accuracy as a function of resolution, from results/results.csv.
+"""
+
+__author__ = "Marco L. Della Vedova"
+__email__ = "marco.dellavedova@chalmers.se"
 
 import argparse
 import csv

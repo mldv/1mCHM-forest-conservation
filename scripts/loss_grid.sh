@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Grid search over the combined-loss weights (alpha: focal, beta: pixel accuracy, dice: 1 - alpha - beta)
 # at 2 m resolution on 50% of the tiles. Prints the validation accuracy at the best validation loss.
+#
+# Author: Marco L. Della Vedova <marco.dellavedova@chalmers.se>
 set -euo pipefail
 
 for weights in "0 0" "1 0" "0 1" "0.2 0.4" "0.2 0.6" "0.25 0.5" "0.3 0.4" "0.4 0.4"; do

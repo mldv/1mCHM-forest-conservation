@@ -1,4 +1,9 @@
-"""Pack the GeoTIFF tiles of one split into an HDF5 file at a given resolution (m), e.g. h5/training-1m.h5."""
+"""
+Pack the GeoTIFF tiles of one split into an HDF5 file at a given resolution (m), e.g. h5/training-1m.h5.
+"""
+
+__author__ = "Marco L. Della Vedova"
+__email__ = "marco.dellavedova@chalmers.se"
 
 import argparse
 from functools import partial

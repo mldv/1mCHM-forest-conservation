@@ -5,6 +5,8 @@
 # Everything is written to quickstart/.
 # With so few tiles the models are trained with a small batch size, few epochs and a fixed seed:
 # the results check that the pipeline works, they are not comparable with the paper.
+#
+# Author: Marco L. Della Vedova <marco.dellavedova@chalmers.se>
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

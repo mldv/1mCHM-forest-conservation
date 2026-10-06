@@ -1,8 +1,12 @@
-"""Predict a conservation value map for any bounding box in Sweden (SWEREF99 TM, EPSG:3006).
+"""
+Predict a conservation value map for any bounding box in Sweden (SWEREF99 TM, EPSG:3006).
 
 The CHM is downloaded via skogdata, cut into 1280x1280 m windows (zero-padded at the far edges)
 and written as a float32 GeoTIFF of per-pixel probabilities of high conservation value.
 """
+
+__author__ = "Marco L. Della Vedova"
+__email__ = "marco.dellavedova@chalmers.se"
 
 import argparse
 import math

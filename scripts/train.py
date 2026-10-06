@@ -1,4 +1,9 @@
-"""Train the U-Net at one resolution with the combined loss; keep the checkpoint with the lowest validation loss."""
+"""
+Train the U-Net at one resolution with the combined loss; keep the checkpoint with the lowest validation loss.
+"""
+
+__author__ = "Marco L. Della Vedova"
+__email__ = "marco.dellavedova@chalmers.se"
 
 import argparse
 import csv

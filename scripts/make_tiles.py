@@ -1,8 +1,12 @@
-"""Build the labelled 1280x1280 m GeoTIFF tiles (band 1: CHM in dm, band 2: 0 background / 1 low / 2 high value).
+"""
+Build the labelled 1280x1280 m GeoTIFF tiles (band 1: CHM in dm, band 2: 0 background / 1 low / 2 high value).
 
 The CHM is read through skogdata from its cache folder (CACHE in .env) and missing files are downloaded from
 Skogsstyrelsen's FTP server, unless SKOGDATA_OFFLINE=1. The CHM version is fixed to what was used in the paper.
 """
+
+__author__ = "Marco L. Della Vedova"
+__email__ = "marco.dellavedova@chalmers.se"
 
 import argparse
 from pathlib import Path

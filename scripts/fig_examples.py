@@ -1,7 +1,11 @@
-"""Fig. 2: CHM, predicted conservation value, ground truth and correctness map for one 1 m tile.
+"""
+Fig. 2: CHM, predicted conservation value, ground truth and correctness map for one 1 m tile.
 
 Paper examples: 636160_6689280_1280.tif and 506880_6268160_1280.tif.
 """
+
+__author__ = "Marco L. Della Vedova"
+__email__ = "marco.dellavedova@chalmers.se"
 
 import argparse
 from pathlib import Path

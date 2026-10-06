@@ -1,4 +1,9 @@
-"""Evaluate trained models on the test set (Table 1) and write results/results.csv."""
+"""
+Evaluate trained models on the test set (Table 1) and write results/results.csv.
+"""
+
+__author__ = "Marco L. Della Vedova"
+__email__ = "marco.dellavedova@chalmers.se"
 
 import argparse
 import csv
