@@ -34,6 +34,7 @@ with h5py.File(out, "w") as f, Pool(args.workers) as pool:
     chm_ds = f.create_dataset("chm", (len(paths), 1, n, n), chunks=(1, 1, n, n), **opts)
     lab_ds = f.create_dataset("labels", (len(paths), n, n), chunks=(1, n, n), **opts)
     f["names"] = [p.name for p in paths]
-    for i, (chm, lab) in enumerate(tqdm(pool.imap(partial(load, resolution=args.resolution), paths), total=len(paths))):
+    for i, (chm, lab) in enumerate(tqdm(pool.imap(partial(load, resolution=args.resolution), paths), total=len(paths),
+                                          desc=f"{args.split} {args.resolution} m")):
         chm_ds[i, 0] = chm
         lab_ds[i] = lab

@@ -50,7 +50,7 @@ shapely.prepare(low)
 shapely.prepare(high)
 
 failed = []
-for tile, split in tqdm(zip(grid.geometry, grid["split"]), total=len(grid)):
+for tile, split in tqdm(zip(grid.geometry, grid["split"]), total=len(grid), desc="tiles"):
     x0, y0, *_ = tile.bounds
     path = Path(args.out) / split / f"{int(x0)}_{int(y0)}_1280.tif"
     if path.exists():

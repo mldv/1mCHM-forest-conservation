@@ -37,6 +37,7 @@ parser.add_argument("--patience", type=int, default=10)
 parser.add_argument("--min-delta", type=float, default=1e-4)
 parser.add_argument("--fraction", type=float, default=1.0, help="fraction of tiles used (loss grid search)")
 parser.add_argument("--workers", type=int, default=8)
+parser.add_argument("--seed", type=int, default=None, help="random seed for weights and shuffling")
 args = parser.parse_args()
 
 batch_size, lr = HPARAMS[args.resolution]
@@ -48,6 +49,8 @@ out.mkdir(parents=True, exist_ok=True)
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+if args.seed is not None:
+    torch.manual_seed(args.seed)
 
 datasets = {}
 for split in ("training", "validation"):
@@ -55,7 +58,7 @@ for split in ("training", "validation"):
     datasets[split] = subset(ds, args.fraction) if args.fraction < 1 else ds
 loaders = {
     split: DataLoader(ds, batch_size=batch_size, shuffle=split == "training", num_workers=args.workers,
-                      pin_memory=True, persistent_workers=args.workers > 0)
+                      pin_memory=device.type == "cuda", persistent_workers=args.workers > 0)
     for split, ds in datasets.items()
 }
 

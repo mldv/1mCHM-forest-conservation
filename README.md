@@ -1,6 +1,6 @@
 # Meter-resolution canopy height data alone can be used for predicting the conservation value of Boreal forests
 
-Code and data for the paper by Marco L. Della Vedova and Mattias Wahde, *IEEE Geoscience and Remote Sensing Letters* (2025).
+Code and data for the paper by Marco L. Della Vedova and Mattias Wahde, *IEEE Geoscience and Remote Sensing Letters* (2025). DOI: [10.1109/LGRS.2026.3741421](https://doi.org/10.1109/LGRS.2026.3741421).
 
 A U-Net takes a canopy height model (CHM) tile as its only input and predicts, for every pixel, the probability that the forest has high conservation value. Models are trained on 1280×1280 m tiles at resolutions from 40 m down to 1 m. At 1 m the model reaches a test accuracy above 0.95 in the South Boreal region of Sweden.
 
@@ -41,7 +41,7 @@ To try the whole pipeline on a laptop (no GPU needed), run:
 bash scripts/quickstart.sh
 ```
 
-The script builds the tiles of a 10×10 km area: 32 training, 9 validation and 11 test tiles. It downloads about 120 MB of CHM and 190 MB of CHM metadata. Then it trains the 20 m and 10 m models and evaluates them on the test tiles. Everything is written to `quickstart/`, and the run takes a few minutes. With so few tiles, the models use a small batch size and 15 epochs (change with `EPOCHS=...`). The resulting accuracies show that the pipeline works, but they are not comparable with the paper.
+The script builds the tiles of a 10×10 km area: 32 training, 9 validation and 11 test tiles. It downloads about 120 MB of CHM and 190 MB of CHM metadata. Then it trains the 20 m and 10 m models and evaluates them on the test tiles. Everything is written to `quickstart/`, and the run takes a few minutes. With so few tiles, the models use batch size 2, 15 epochs (change with `EPOCHS=...`) and a fixed random seed. The resulting accuracies show that the pipeline works, but they are not comparable with the paper.
 
 ## Canopy height data
 
@@ -160,7 +160,8 @@ Areas labelled both high and low are treated as background when the tiles are ma
   title   = {Meter-resolution canopy height data alone can be used for predicting the conservation value of Boreal forests},
   author  = {Della Vedova, Marco L. and Wahde, Mattias},
   journal = {IEEE Geoscience and Remote Sensing Letters},
-  year    = {2025}
+  year    = {2025},
+  doi     = {10.1109/LGRS.2026.3741421}
 }
 ```
 
