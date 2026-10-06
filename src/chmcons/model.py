@@ -1,3 +1,11 @@
+"""
+U-Net mapping a single-channel CHM tile to a per-pixel probability of high conservation value,
+with feature widths scaled to the tile size.
+"""
+
+__author__ = "Marco L. Della Vedova"
+__email__ = "marco.dellavedova@chalmers.se"
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

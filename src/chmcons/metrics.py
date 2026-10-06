@@ -1,3 +1,11 @@
+"""
+Evaluation metrics (accuracy, precision, recall, IoU, Dice) from pixel confusion counts
+accumulated over non-background pixels.
+"""
+
+__author__ = "Marco L. Della Vedova"
+__email__ = "marco.dellavedova@chalmers.se"
+
 from dataclasses import dataclass
 
 import torch

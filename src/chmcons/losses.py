@@ -1,4 +1,11 @@
-"""Pixel-level losses on non-background pixels (label != -1). `pred` is (B, 1, H, W) in [0, 1], `target` (B, H, W)."""
+"""
+Loss functions: binary focal, Dice, differentiable pixel accuracy, and their weighted combination (Eq. 3).
+
+All losses are computed on non-background pixels (label != -1). `pred` is (B, 1, H, W) in [0, 1], `target` (B, H, W).
+"""
+
+__author__ = "Marco L. Della Vedova"
+__email__ = "marco.dellavedova@chalmers.se"
 
 import torch
 import torch.nn.functional as F

@@ -1,3 +1,11 @@
+"""
+Data handling: reading the labelled GeoTIFF tiles, CHM normalization, downsampling to coarser
+resolutions (block mean for the CHM, majority vote for the labels) and the HDF5 dataset used for training.
+"""
+
+__author__ = "Marco L. Della Vedova"
+__email__ = "marco.dellavedova@chalmers.se"
+
 from pathlib import Path
 
 import h5py
