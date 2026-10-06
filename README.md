@@ -19,6 +19,7 @@ scripts/
   fig_resolution.py Fig. 3
   fig_examples.py   Fig. 2
   loss_grid.sh      grid search over the loss weights
+  quickstart.sh     small end-to-end run for a laptop
   predict.py        prediction map for any bounding box in Sweden
 ```
 
@@ -31,6 +32,16 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -e .
 ```
+
+## Quick start
+
+To try the whole pipeline on a laptop (no GPU needed), run:
+
+```bash
+bash scripts/quickstart.sh
+```
+
+The script builds the tiles of a 10×10 km area: 32 training, 9 validation and 11 test tiles. It downloads about 120 MB of CHM and 190 MB of CHM metadata. Then it trains the 20 m and 10 m models and evaluates them on the test tiles. Everything is written to `quickstart/`, and the run takes a few minutes. With so few tiles, the models use a small batch size and 15 epochs (change with `EPOCHS=...`). The resulting accuracies show that the pipeline works, but they are not comparable with the paper.
 
 ## Canopy height data
 

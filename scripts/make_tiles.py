@@ -23,6 +23,8 @@ parser.add_argument("--labels", default="data/labels.gpkg.zip")
 parser.add_argument("--grid", default="data/tiles.gpkg")
 parser.add_argument("--out", default="tiles")
 parser.add_argument("--splits", nargs="+", default=["training", "validation", "test"])
+parser.add_argument("--bbox", type=float, nargs=4, metavar=("XMIN", "YMIN", "XMAX", "YMAX"),
+                    help="only tiles inside this box (EPSG:3006)")
 parser.add_argument("--list-files", metavar="FILE",
                     help="only write the FTP paths of the CHM files needed (e.g. for an FTP client) to FILE")
 args = parser.parse_args()
@@ -32,6 +34,8 @@ chm_source.configure(metadata=CHM_METADATA, cutoff=CHM_CUTOFF)
 
 grid = geopandas.read_file(args.grid)
 grid = grid[grid["split"].isin(args.splits)]
+if args.bbox:
+    grid = grid[grid.within(shapely.box(*args.bbox))]
 
 if args.list_files:
     files = {str(f) for tile in grid.geometry for f in chm_source.required_files(tile)}
