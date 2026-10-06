@@ -27,11 +27,13 @@ class Confusion:
         return self.tp + self.fp + self.tn + self.fn
 
     def summary(self) -> dict[str, float]:
+        """Metrics; 0.0 when undefined (e.g. precision when no pixel is predicted positive)."""
         tp, fp, tn, fn = self.tp, self.fp, self.tn, self.fn
+        ratio = lambda a, b: a / b if b else 0.0
         return {
-            "accuracy": (tp + tn) / self.total,
-            "precision": tp / (tp + fp),
-            "recall": tp / (tp + fn),
-            "iou": tp / (tp + fp + fn),
-            "dice": 2 * tp / (2 * tp + fp + fn),
+            "accuracy": ratio(tp + tn, self.total),
+            "precision": ratio(tp, tp + fp),
+            "recall": ratio(tp, tp + fn),
+            "iou": ratio(tp, tp + fp + fn),
+            "dice": ratio(2 * tp, 2 * tp + fp + fn),
         }
