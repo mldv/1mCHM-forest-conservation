@@ -7,6 +7,8 @@ import argparse
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+
+plt.rcParams["pdf.fonttype"] = 42
 import numpy as np
 import torch
 from matplotlib.colors import ListedColormap

@@ -5,6 +5,8 @@ import csv
 
 import matplotlib.pyplot as plt
 
+plt.rcParams["pdf.fonttype"] = 42
+
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--results", default="results/results.csv")
 parser.add_argument("--out", default="results/ResolutionFigure.pdf")
