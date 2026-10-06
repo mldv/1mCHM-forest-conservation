@@ -26,6 +26,7 @@ scripts/
   loss_grid.sh      grid search over the loss weights
   quickstart.sh     small end-to-end run for a laptop
   predict.py        prediction map for any bounding box in Sweden
+  landcover.py      forest mask from the national land cover data, used by predict.py
 ```
 
 ## Installation
@@ -48,7 +49,7 @@ Both examples run on a laptop, no GPU needed.
 python scripts/predict.py --bbox 695040 6636800 700160 6641920 --png
 ```
 
-The first run downloads the published 2 m model (49 MB) into `checkpoints/`, plus the CHM metadata (about 200 MB, once) and the CHM of the area. The result is `results/prediction.tif`, a GeoTIFF of per-pixel probabilities of high conservation value, with a preview in `results/prediction.png`. On a laptop CPU the 2 m model takes about 1.5 s per 1.28×1.28 km window and about 2 GB of memory. See [Prediction for any area](#prediction-for-any-area) for other areas and models.
+The first run downloads the published 2 m model (49 MB) into `checkpoints/`, plus the CHM metadata (about 200 MB, once) and the CHM of the area. The result is `results/prediction.tif`, a GeoTIFF of per-pixel probabilities of high conservation value on forest land, with a preview in `results/prediction.png`. On a laptop CPU the 2 m model takes about 1.5 s per 1.28×1.28 km window and about 2 GB of memory. See [Prediction for any area](#prediction-for-any-area) for other areas and models.
 
 **Train and test small models.** To try the whole pipeline, run:
 
@@ -157,6 +158,8 @@ Coordinates are SWEREF99 TM (EPSG:3006). The output is a GeoTIFF of per-pixel pr
 ```bash
 python scripts/predict.py --bbox 688640 6580480 691000 6582000 --checkpoint runs/1m/model.pth --resolution 1 --png
 ```
+
+The model is trained on forest only, so its output elsewhere (water, fields, built-up land) is meaningless. Pixels that are not forest land in the Swedish national land cover data ([NMD2023](https://www.naturvardsverket.se/verktyg-och-tjanster/kartor-och-karttjanster/nationella-marktackedata/), Naturvårdsverket, CC0) are therefore set to no data. Forest land includes temporarily non-forest land such as clear-cuts (NMD classes 111–128, plus low mountain forest 23 and 43). NMD is read for the area from Naturvårdsverket's map service, so nothing extra has to be downloaded. Use `--no-forest-mask` to keep the prediction everywhere.
 
 For prediction, the latest CHM available from Skogsstyrelsen is used. The 1 m model is about 12 times slower than the 2 m model on a CPU, and needs about 6 GB of memory.
 

@@ -3,7 +3,8 @@ Predict a conservation value map for any bounding box in Sweden (SWEREF99 TM, EP
 
 The CHM is downloaded via skogdata, cut into 1280x1280 m windows (zero-padded at the far edges)
 and written as a float32 GeoTIFF of per-pixel probabilities of high conservation value.
-Without --checkpoint, the published model for the resolution is downloaded once (from the GitHub Release)
+Pixels that are not forest according to the national land cover data (NMD2023, Naturvårdsverket) are set to
+no data, unless --no-forest-mask. Without --checkpoint, the published model for the resolution is downloaded once (from the GitHub Release)
 into checkpoints/.
 """
 
@@ -24,6 +25,7 @@ from skogdata import DataSourceCatalog
 
 from chmcons.data import TILE_M, normalize
 from chmcons.model import load_unet
+from landcover import forest_mask
 
 # Published models, per resolution (m): URL of the GitHub Release asset and its SHA-256
 PRETRAINED = {
@@ -39,6 +41,7 @@ parser.add_argument("--checkpoint", default=None, help="model.pth from train.py 
 parser.add_argument("--resolution", type=int, default=2, help="pixel size in m the model was trained for")
 parser.add_argument("--out", default="results/prediction.tif")
 parser.add_argument("--png", action="store_true", help="also save a CHM / prediction preview")
+parser.add_argument("--no-forest-mask", action="store_true", help="keep the prediction on non-forest land")
 args = parser.parse_args()
 
 checkpoint = args.checkpoint
@@ -72,11 +75,13 @@ with torch.no_grad():
             x = torch.from_numpy(normalize(padded[i : i + n, j : j + n]))[None, None].to(device)
             pred[i : i + n, j : j + n] = model(x).squeeze().cpu().numpy()
 pred = pred[:h, :w]
+if not args.no_forest_mask:
+    pred[~forest_mask(pred.shape, transform)] = np.nan
 
 out = Path(args.out)
 out.parent.mkdir(parents=True, exist_ok=True)
 with rasterio.open(out, "w", driver="GTiff", compress="lzw", crs="EPSG:3006", transform=transform,
-                   count=1, height=h, width=w, dtype="float32") as dst:
+                   count=1, height=h, width=w, dtype="float32", nodata=np.nan) as dst:
     dst.write(pred, 1)
 
 if args.png:
