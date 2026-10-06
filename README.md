@@ -48,7 +48,7 @@ Both examples run on a laptop, no GPU needed.
 python scripts/predict.py --bbox 695040 6636800 700160 6641920 --png
 ```
 
-The first run downloads the published 2 m model (47 MB) into `checkpoints/`, plus the CHM metadata (about 200 MB, once) and the CHM of the area. The result is `results/prediction.tif`, a GeoTIFF of per-pixel probabilities of high conservation value, with a preview in `results/prediction.png`. On a laptop CPU the 2 m model takes about 1.5 s per 1.28×1.28 km window and about 2 GB of memory. See [Prediction for any area](#prediction-for-any-area) for other areas and models.
+The first run downloads the published 2 m model (49 MB) into `checkpoints/`, plus the CHM metadata (about 200 MB, once) and the CHM of the area. The result is `results/prediction.tif`, a GeoTIFF of per-pixel probabilities of high conservation value, with a preview in `results/prediction.png`. On a laptop CPU the 2 m model takes about 1.5 s per 1.28×1.28 km window and about 2 GB of memory. See [Prediction for any area](#prediction-for-any-area) for other areas and models.
 
 **Train and test small models.** To try the whole pipeline, run:
 

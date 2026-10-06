@@ -26,7 +26,12 @@ from chmcons.data import TILE_M, normalize
 from chmcons.model import load_unet
 
 # Published models, per resolution (m): URL of the GitHub Release asset and its SHA-256
-PRETRAINED = {}
+PRETRAINED = {
+    2: (
+        "https://github.com/mldv/1mCHM-forest-conservation/releases/download/v1.0/chmcons-2m.pth",
+        "aa46c9dc2a830fe2f712699c7dc7646a02cb906afabab63bcaabc43576475e96",
+    ),
+}
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--bbox", type=float, nargs=4, required=True, metavar=("XMIN", "YMIN", "XMAX", "YMAX"))
