@@ -1,6 +1,8 @@
 # Meter-resolution canopy height data alone can be used for predicting the conservation value of Boreal forests
 
-Code and data for the paper by Marco L. Della Vedova and Mattias Wahde, *IEEE Geoscience and Remote Sensing Letters* (2026). DOI: [10.1109/LGRS.2026.3741421](https://doi.org/10.1109/LGRS.2026.3741421).
+Code and data for the paper 
+
+>Marco L. Della Vedova and Mattias Wahde, Meter-resolution canopy height data alone can be used for predicting the conservation value of Boreal forests, *IEEE Geoscience and Remote Sensing Letters* (2026 – **ACCEPTED FOR PUBLICATION, TO APPEAR**). DOI: [10.1109/LGRS.2026.3741421](https://doi.org/10.1109/LGRS.2026.3741421).
 
 A U-Net takes a canopy height model (CHM) tile as its only input and predicts, for every pixel, the probability that the forest has high conservation value. Models are trained on 1280×1280 m tiles at resolutions from 40 m down to 1 m. At 1 m the model reaches a test accuracy above 0.95 in the South Boreal region of Sweden.
 
