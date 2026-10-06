@@ -3,6 +3,8 @@ Predict a conservation value map for any bounding box in Sweden (SWEREF99 TM, EP
 
 The CHM is downloaded via skogdata, cut into 1280x1280 m windows (zero-padded at the far edges)
 and written as a float32 GeoTIFF of per-pixel probabilities of high conservation value.
+Without --checkpoint, the published model for the resolution is downloaded once (from the GitHub Release)
+into checkpoints/.
 """
 
 __author__ = "Marco L. Della Vedova"
@@ -23,13 +25,26 @@ from skogdata import DataSourceCatalog
 from chmcons.data import TILE_M, normalize
 from chmcons.model import load_unet
 
+# Published models, per resolution (m): URL of the GitHub Release asset and its SHA-256
+PRETRAINED = {}
+
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--bbox", type=float, nargs=4, required=True, metavar=("XMIN", "YMIN", "XMAX", "YMAX"))
-parser.add_argument("--checkpoint", default="runs/1m/model.pth")
-parser.add_argument("--resolution", type=int, default=1, help="pixel size in m the checkpoint was trained for")
+parser.add_argument("--checkpoint", default=None, help="model.pth from train.py (default: published model)")
+parser.add_argument("--resolution", type=int, default=2, help="pixel size in m the model was trained for")
 parser.add_argument("--out", default="results/prediction.tif")
 parser.add_argument("--png", action="store_true", help="also save a CHM / prediction preview")
 args = parser.parse_args()
+
+checkpoint = args.checkpoint
+if checkpoint is None:
+    if args.resolution not in PRETRAINED:
+        parser.error(f"no published model at {args.resolution} m (available: {sorted(PRETRAINED)}), use --checkpoint")
+    url, sha256 = PRETRAINED[args.resolution]
+    checkpoint = Path("checkpoints") / Path(url).name
+    if not checkpoint.exists():
+        checkpoint.parent.mkdir(exist_ok=True)
+        torch.hub.download_url_to_file(url, str(checkpoint), hash_prefix=sha256)
 
 chm, transform = DataSourceCatalog.Tradhojd(shapely.box(*args.bbox), padding=0)
 chm = chm[0].astype(np.float32)
@@ -45,7 +60,7 @@ padded[:h, :w] = chm
 pred = np.zeros_like(padded)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = load_unet(args.checkpoint, n, device)
+model = load_unet(checkpoint, n, device)
 with torch.no_grad():
     for i in range(0, padded.shape[0], n):
         for j in range(0, padded.shape[1], n):

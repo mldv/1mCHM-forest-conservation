@@ -140,7 +140,7 @@ bash scripts/loss_grid.sh
 Coordinates are SWEREF99 TM (EPSG:3006). The output is a GeoTIFF of per-pixel probabilities of high conservation value:
 
 ```bash
-python scripts/predict.py --bbox 688640 6580480 691000 6582000 --checkpoint runs/1m/model.pth --png
+python scripts/predict.py --bbox 688640 6580480 691000 6582000 --checkpoint runs/1m/model.pth --resolution 1 --png
 ```
 
 The area is processed in independent 1280×1280 m windows, so artifacts can appear at window borders and in the zero-padded windows at the edges.

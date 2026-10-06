@@ -9,4 +9,5 @@ tiles/
 runs/
 results/
 *.pth
+checkpoints/
 quickstart/

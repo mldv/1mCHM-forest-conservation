@@ -69,6 +69,6 @@ def build_unet(tile_px: int) -> UNet:
 
 def load_unet(path: str, tile_px: int, device: str | torch.device = "cpu") -> UNet:
     model = build_unet(tile_px)
-    checkpoint = torch.load(path, map_location=device, weights_only=False)
+    checkpoint = torch.load(path, map_location=device, weights_only=True)
     model.load_state_dict(checkpoint.get("model_state_dict", checkpoint))
     return model.to(device).eval()
