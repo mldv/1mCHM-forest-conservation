@@ -4,12 +4,17 @@ Code and data for the paper by Marco L. Della Vedova and Mattias Wahde, *IEEE Ge
 
 A U-Net takes a canopy height model (CHM) tile as its only input and predicts, for every pixel, the probability that the forest has high conservation value. Models are trained on 1280×1280 m tiles at resolutions from 40 m down to 1 m. At 1 m the model reaches a test accuracy above 0.95 in the South Boreal region of Sweden.
 
+![Test accuracy as a function of CHM resolution](figures/fig3_resolution.png)
+
+*Fig. 3 of the paper: test accuracy as a function of resolution. Accuracy jumps once the resolution reaches 2 m or finer.*
+
 ## Repository layout
 
 ```
 data/
   labels.gpkg.zip   ground-truth polygons, dissolved per class (naturalness 0 = low, 1 = high), EPSG:3006
   tiles.gpkg        the 23,448 tiles (1280x1280 m) used in the paper, with their training / validation / test split
+figures/            figures shown in this README
 src/chmcons/        model, data handling, losses, metrics
 scripts/
   make_tiles.py     CHM + labels -> 2-band GeoTIFF tiles
@@ -35,7 +40,17 @@ pip install -e .
 
 ## Quick start
 
-To try the whole pipeline on a laptop (no GPU needed), run:
+Both examples run on a laptop, no GPU needed.
+
+**Predict with the pre-trained model.** Map the conservation value of a 5×5 km area (coordinates in SWEREF99 TM, EPSG:3006):
+
+```bash
+python scripts/predict.py --bbox 695040 6636800 700160 6641920 --png
+```
+
+The first run downloads the published 2 m model (47 MB) into `checkpoints/`, plus the CHM metadata (about 200 MB, once) and the CHM of the area. The result is `results/prediction.tif`, a GeoTIFF of per-pixel probabilities of high conservation value, with a preview in `results/prediction.png`. On a laptop CPU the 2 m model takes about 1.5 s per 1.28×1.28 km window and about 2 GB of memory. See [Prediction for any area](#prediction-for-any-area) for other areas and models.
+
+**Train and test small models.** To try the whole pipeline, run:
 
 ```bash
 bash scripts/quickstart.sh
@@ -137,11 +152,13 @@ bash scripts/loss_grid.sh
 
 ## Prediction for any area
 
-Coordinates are SWEREF99 TM (EPSG:3006). The output is a GeoTIFF of per-pixel probabilities of high conservation value:
+Coordinates are SWEREF99 TM (EPSG:3006). The output is a GeoTIFF of per-pixel probabilities of high conservation value. By default, the published 2 m model is used (downloaded once from the GitHub Release). To use a model trained with `train.py`, pass the checkpoint and its resolution:
 
 ```bash
 python scripts/predict.py --bbox 688640 6580480 691000 6582000 --checkpoint runs/1m/model.pth --resolution 1 --png
 ```
+
+For prediction, the latest CHM available from Skogsstyrelsen is used. The 1 m model is about 12 times slower than the 2 m model on a CPU, and needs about 6 GB of memory.
 
 The area is processed in independent 1280×1280 m windows, so artifacts can appear at window borders and in the zero-padded windows at the edges.
 
